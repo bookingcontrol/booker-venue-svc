@@ -21,8 +21,8 @@ import (
 	"github.com/bookingcontrol/booker-venue-svc/internal/metrics"
 	"github.com/bookingcontrol/booker-venue-svc/internal/redis"
 	"github.com/bookingcontrol/booker-venue-svc/internal/tracing"
-	bookingpb "github.com/bookingcontrol/booker-contracts-go/v1/booking"
-	venuepb "github.com/bookingcontrol/booker-contracts-go/v1/venue"
+	bookingpb "github.com/bookingcontrol/booker-contracts-go/booking"
+	venuepb "github.com/bookingcontrol/booker-contracts-go/venue"
 	"google.golang.org/grpc/credentials/insecure"
 )
 

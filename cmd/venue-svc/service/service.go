@@ -9,9 +9,9 @@ import (
 	"github.com/bookingcontrol/booker-venue-svc/cmd/venue-svc/config"
 	"github.com/bookingcontrol/booker-venue-svc/cmd/venue-svc/repository"
 	"github.com/bookingcontrol/booker-venue-svc/internal/kafka"
-	bookingpb "github.com/bookingcontrol/booker-contracts-go/v1/booking"
-	commonpb "github.com/bookingcontrol/booker-contracts-go/v1/common"
-	venuepb "github.com/bookingcontrol/booker-contracts-go/v1/venue"
+	bookingpb "github.com/bookingcontrol/booker-contracts-go/booking"
+	commonpb "github.com/bookingcontrol/booker-contracts-go/common"
+	venuepb "github.com/bookingcontrol/booker-contracts-go/venue"
 	"github.com/bookingcontrol/booker-venue-svc/internal/tracing"
 )
 

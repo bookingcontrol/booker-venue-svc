@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	github.com/IBM/sarama v1.43.0
-	github.com/bookingcontrol/booker-contracts-go v1.0.5
+	github.com/bookingcontrol/booker-contracts-go v1.0.7
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.3
 	github.com/prometheus/client_golang v1.23.2

@@ -24,21 +24,21 @@ func New(db *pgxpool.Pool, redis *redis.Client) *Repository {
 }
 
 // Venue operations
-func (r *Repository) CreateVenue(ctx context.Context, name, timezone, address string) (string, error) {
+func (r *Repository) CreateVenue(ctx context.Context, name, timezone, address, phone, email string) (string, error) {
 	id := uuid.New().String()
 	_, err := r.db.Exec(ctx,
-		`INSERT INTO venues (id, name, timezone, address, created_at, updated_at)
-		 VALUES ($1, $2, $3, $4, NOW(), NOW())`,
-		id, name, timezone, address)
+		`INSERT INTO venues (id, name, timezone, address, phone, email, created_at, updated_at)
+		 VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
+		id, name, timezone, address, phone, email)
 	return id, err
 }
 
 func (r *Repository) GetVenue(ctx context.Context, id string) (*Venue, error) {
 	var v Venue
 	err := r.db.QueryRow(ctx,
-		`SELECT id, name, timezone, address, created_at, updated_at
+		`SELECT id, name, timezone, address, phone, email, created_at, updated_at
 		 FROM venues WHERE id = $1`, id).
-		Scan(&v.ID, &v.Name, &v.Timezone, &v.Address, &v.CreatedAt, &v.UpdatedAt)
+		Scan(&v.ID, &v.Name, &v.Timezone, &v.Address, &v.Phone, &v.Email, &v.CreatedAt, &v.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (r *Repository) ListVenues(ctx context.Context, limit, offset int32) ([]*Ve
 	}
 
 	rows, err := r.db.Query(ctx,
-		`SELECT id, name, timezone, address, created_at, updated_at
+		`SELECT id, name, timezone, address, phone, email, created_at, updated_at
 		 FROM venues ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
 		limit, offset)
 	if err != nil {
@@ -64,7 +64,7 @@ func (r *Repository) ListVenues(ctx context.Context, limit, offset int32) ([]*Ve
 	var venues []*Venue
 	for rows.Next() {
 		var v Venue
-		if err := rows.Scan(&v.ID, &v.Name, &v.Timezone, &v.Address, &v.CreatedAt, &v.UpdatedAt); err != nil {
+		if err := rows.Scan(&v.ID, &v.Name, &v.Timezone, &v.Address, &v.Phone, &v.Email, &v.CreatedAt, &v.UpdatedAt); err != nil {
 			return nil, 0, err
 		}
 		venues = append(venues, &v)
@@ -73,10 +73,10 @@ func (r *Repository) ListVenues(ctx context.Context, limit, offset int32) ([]*Ve
 	return venues, total, nil
 }
 
-func (r *Repository) UpdateVenue(ctx context.Context, id, name, address string) error {
+func (r *Repository) UpdateVenue(ctx context.Context, id, name, address, phone, email string) error {
 	_, err := r.db.Exec(ctx,
-		`UPDATE venues SET name = $1, address = $2, updated_at = NOW() WHERE id = $3`,
-		name, address, id)
+		`UPDATE venues SET name = $1, address = $2, phone = $3, email = $4, updated_at = NOW() WHERE id = $5`,
+		name, address, phone, email, id)
 	return err
 }
 
@@ -226,10 +226,10 @@ func (r *Repository) ListTables(ctx context.Context, roomID, venueID string, lim
 	return tables, total, nil
 }
 
-func (r *Repository) UpdateTable(ctx context.Context, id, name string, capacity int32, zone string) error {
+func (r *Repository) UpdateTable(ctx context.Context, id, name string, capacity int32, canMerge bool, zone string) error {
 	_, err := r.db.Exec(ctx,
-		`UPDATE tables SET name = $1, capacity = $2, zone = $3, updated_at = NOW() WHERE id = $4`,
-		name, capacity, zone, id)
+		`UPDATE tables SET name = $1, capacity = $2, can_merge = $3, zone = $4, updated_at = NOW() WHERE id = $5`,
+		name, capacity, canMerge, zone, id)
 	
 	// Invalidate cache
 	var roomID string
@@ -261,6 +261,8 @@ type Venue struct {
 	Name      string
 	Timezone  string
 	Address   string
+	Phone     *string
+	Email     *string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

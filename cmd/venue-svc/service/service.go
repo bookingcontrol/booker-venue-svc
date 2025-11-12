@@ -40,9 +40,11 @@ func (s *Service) CreateVenue(ctx context.Context, req *venuepb.CreateVenueReque
 		Str("name", req.Name).
 		Str("timezone", req.Timezone).
 		Str("address", req.Address).
+		Str("phone", req.Phone).
+		Str("email", req.Email).
 		Msg("Creating venue")
 
-	id, err := s.repo.CreateVenue(ctx, req.Name, req.Timezone, req.Address)
+	id, err := s.repo.CreateVenue(ctx, req.Name, req.Timezone, req.Address, req.Phone, req.Email)
 	if err != nil {
 		log.Error().Err(err).
 			Str("name", req.Name).
@@ -92,7 +94,7 @@ func (s *Service) ListVenues(ctx context.Context, req *venuepb.ListVenuesRequest
 }
 
 func (s *Service) UpdateVenue(ctx context.Context, req *venuepb.UpdateVenueRequest) (*venuepb.Venue, error) {
-	err := s.repo.UpdateVenue(ctx, req.Id, req.Name, req.Address)
+	err := s.repo.UpdateVenue(ctx, req.Id, req.Name, req.Address, req.Phone, req.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -244,7 +246,7 @@ func (s *Service) UpdateTable(ctx context.Context, req *venuepb.UpdateTableReque
 	ctx, span := tracing.StartSpan(ctx, "UpdateTable")
 	defer span.End()
 
-	err := s.repo.UpdateTable(ctx, req.Id, req.Name, req.Capacity, req.Zone)
+	err := s.repo.UpdateTable(ctx, req.Id, req.Name, req.Capacity, req.CanMerge, req.Zone)
 	if err != nil {
 		return nil, err
 	}
@@ -505,7 +507,7 @@ func (s *Service) GetTableLayout(ctx context.Context, req *venuepb.GetTableLayou
 
 // Converters
 func toVenueProto(v *repository.Venue) *venuepb.Venue {
-	return &venuepb.Venue{
+	venue := &venuepb.Venue{
 		Id:        v.ID,
 		Name:      v.Name,
 		Timezone:  v.Timezone,
@@ -513,6 +515,13 @@ func toVenueProto(v *repository.Venue) *venuepb.Venue {
 		CreatedAt: v.CreatedAt.Unix(),
 		UpdatedAt: v.UpdatedAt.Unix(),
 	}
+	if v.Phone != nil {
+		venue.Phone = *v.Phone
+	}
+	if v.Email != nil {
+		venue.Email = *v.Email
+	}
+	return venue
 }
 
 func toRoomProto(r *repository.Room) *venuepb.Room {

@@ -89,7 +89,7 @@ func TestRepository_CreateVenue_Integration(t *testing.T) {
 	defer cleanup()
 
 	ctx := context.Background()
-	id, err := repo.CreateVenue(ctx, "Test Venue", "UTC", "123 Main St")
+	id, err := repo.CreateVenue(ctx, "Test Venue", "UTC", "123 Main St", "+79991234567", "test@example.com")
 	require.NoError(t, err)
 	assert.NotEmpty(t, id)
 
@@ -99,6 +99,8 @@ func TestRepository_CreateVenue_Integration(t *testing.T) {
 	assert.Equal(t, "Test Venue", venue.Name)
 	assert.Equal(t, "UTC", venue.Timezone)
 	assert.Equal(t, "123 Main St", venue.Address)
+	assert.Equal(t, "+79991234567", venue.Phone)
+	assert.Equal(t, "test@example.com", venue.Email)
 }
 
 func TestRepository_CreateRoom_Integration(t *testing.T) {
@@ -112,7 +114,7 @@ func TestRepository_CreateRoom_Integration(t *testing.T) {
 	ctx := context.Background()
 
 	// Create venue first
-	venueID, err := repo.CreateVenue(ctx, "Test Venue", "UTC", "123 Main St")
+	venueID, err := repo.CreateVenue(ctx, "Test Venue", "UTC", "123 Main St", "+79991234567", "test@example.com")
 	require.NoError(t, err)
 
 	// Create room
@@ -138,7 +140,7 @@ func TestRepository_CreateTable_Integration(t *testing.T) {
 	ctx := context.Background()
 
 	// Create venue and room first
-	venueID, err := repo.CreateVenue(ctx, "Test Venue", "UTC", "123 Main St")
+	venueID, err := repo.CreateVenue(ctx, "Test Venue", "UTC", "123 Main St", "+79991234567", "test@example.com")
 	require.NoError(t, err)
 
 	roomID, err := repo.CreateRoom(ctx, venueID, "Main Room")
@@ -170,7 +172,7 @@ func TestRepository_ListTables_Integration(t *testing.T) {
 	ctx := context.Background()
 
 	// Create venue, room, and tables
-	venueID, err := repo.CreateVenue(ctx, "Test Venue", "UTC", "123 Main St")
+	venueID, err := repo.CreateVenue(ctx, "Test Venue", "UTC", "123 Main St", "+79991234567", "test@example.com")
 	require.NoError(t, err)
 
 	roomID, err := repo.CreateRoom(ctx, venueID, "Main Room")
